@@ -135,6 +135,10 @@ export default function Home() {
       .then((json) => setTasks(json.data));
   }, [token]);
 
+  useEffect(() => {
+    setToken(localStorage.getItem('token') || "")
+  },[])
+
   return (
     <div>
     {token ? (
