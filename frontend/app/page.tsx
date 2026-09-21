@@ -168,7 +168,7 @@ export default function Home() {
       <form onSubmit={handleSubmit}>
         <input value={titles} onChange={(e) => setTitles(e.target.value)} />
         <textarea value={descriptions} onChange={(e) => setDescriptions(e.target.value)}></textarea>
-        <button >送信ボタン</button>
+        <button >課題の追加</button>
       </form>
     </div>
   ) : (
