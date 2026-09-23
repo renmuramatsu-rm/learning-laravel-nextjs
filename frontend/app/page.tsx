@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import TaskItem from "../components/TaskItem";
 
-type Task = {
+export type Task = {
   id: number;
   title: string;
   description: string | null;
@@ -15,24 +16,27 @@ export default function Home() {
   const [descriptions, setDescriptions] = useState("");
   const [validationError, setValidationError] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingTitles, setEditingTitles] = useState("");
-  const [editingDescriptions, setEditingDescriptions] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
+  const [name, setName] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let success;
-    fetch('http://172.23.85.221:8000/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
-      body: JSON.stringify({ title: titles , description: descriptions }),
-
+    let success: boolean;
+    fetch("http://172.23.85.221:8000/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ title: titles, description: descriptions }),
     })
       .then((res) => {
         success = res.ok;
-        return (res.json());
+        return res.json();
       })
       .then((json) => {
         if (success) {
@@ -40,147 +44,222 @@ export default function Home() {
           setTitles("");
           setDescriptions("");
           setValidationError("");
-        }
-        else{
-          setValidationError(json.message)
+        } else {
+          setValidationError(json.message);
         }
       });
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     fetch(`http://172.23.85.221:8000/api/tasks/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then((res) => {
-        const success = res.ok;
-        if (success) {
-          setTasks(tasks.filter((task) =>task.id !== id))
-        }
-      })
-  }
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      const success = res.ok;
+      if (success) {
+        setTasks(tasks.filter((task) => task.id !== id));
+      }
+    });
+  };
 
-  const handleIdSet = (task) => {
-    setEditingId(task.id);
-    setEditingTitles(task.title);
-    setEditingDescriptions(task.description);
-  }
+  const handleStartEdit = (id: number) => {
+    setEditingId(id);
+  };
 
-  const handlePut = (id) => {
-    let success;
+  const handlePut = (id: number, title: string, description: string) => {
+    let success: boolean;
     fetch(`http://172.23.85.221:8000/api/tasks/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': "application/json",
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        title: editingTitles,
-        description: editingDescriptions,
-      })
+        title,
+        description,
+      }),
     })
-        .then((res) => {
-          success = res.ok;
-          return (res.json());
-        })
-        .then((json) => {
-          if (success) {
-            setTasks(tasks.map(
-            (task) => task.id === editingId ? {...task,  title: json.data.title, description: json.data.description } : task
-          ));
-
-            setEditingId(null);
-            setEditingTitles("");
-            setEditingDescriptions("");
-            setValidationError("");
-        }
-          else {
-            setValidationError(json.message)
-          }
-        })
-  }
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    let success;
-      fetch(`http://172.23.85.221:8000/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email , password: password }),
-      })
       .then((res) => {
         success = res.ok;
-        return (res.json());
+        return res.json();
+      })
+      .then((json) => {
+        if (success) {
+          setTasks(
+            tasks.map((task) =>
+              task.id === id ? { ...task, title, description } : task,
+            ),
+          );
+
+          setEditingId(null);
+          setValidationError("");
+        } else {
+          setValidationError(json.message);
+        }
+      });
+  };
+
+  const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let success: boolean;
+    fetch(`http://172.23.85.221:8000/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password }),
+    })
+      .then((res) => {
+        success = res.ok;
+        return res.json();
       })
       .then((json) => {
         if (success) {
           setEmail("");
           setPassword("");
           setToken(json.token);
-          localStorage.setItem('token', json.token);
+          localStorage.setItem("token", json.token);
           setValidationError("");
+        } else {
+          setValidationError(json.message);
         }
-        else{
-          setValidationError(json.message)
+      });
+  };
+
+  const handleRegister = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let success: boolean;
+    fetch(`http://172.23.85.221:8000/api/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password,
+        password_confirmation: passwordConfirmation,
+      }),
+    })
+      .then((res) => {
+        success = res.ok;
+        return res.json();
+      })
+      .then((json) => {
+        if (success) {
+          setName("");
+          setEmail("");
+          setPassword("");
+          setPasswordConfirmation("");
+          setToken(json.token);
+          localStorage.setItem("token", json.token);
+          setValidationError("");
+        } else {
+          setValidationError(json.message);
         }
-  })
-  }
+      });
+  };
+
+  const handleToggle = () => {
+    setIsRegistering(!isRegistering);
+  };
+
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fetch(`http://172.23.85.221:8000/api/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((res) => {
+      const success = res.ok;
+      if (success) {
+        setToken("");
+        localStorage.removeItem("token");
+      }
+    });
+  };
 
   useEffect(() => {
     if (!token) return;
-    fetch('http://172.23.85.221:8000/api/tasks', {
-      headers: { 'Authorization': `Bearer ${token}` },
+    let success: boolean;
+    fetch("http://172.23.85.221:8000/api/tasks", {
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
-      .then((json) => setTasks(json.data));
+      .then((res) => {
+        success = res.ok;
+        return res.json();
+      })
+      .then((json) => {
+        if (success) {
+          setTasks(json.data);
+        } else {
+          setTasks([]);
+        }
+      });
   }, [token]);
 
   useEffect(() => {
-    setToken(localStorage.getItem('token') || "")
-  },[])
+    setToken(localStorage.getItem("token") || "");
+  }, []);
 
   return (
     <div>
-    {token ? (
-    <div>
-      <h1>タスク一覧</h1>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            {task.id === editingId ? (
-            <>
-              <input value={editingTitles} onChange={(e) => setEditingTitles(e.target.value)} />
-              <input value={editingDescriptions} onChange={(e) => setEditingDescriptions(e.target.value)} />
-              <button onClick={()=>handlePut(task.id)}>保存</button>
-            </>
-            ) : (
-            <>
-              {task.title}
-              {task.description}
-              <button type="button" onClick={() => handleIdSet(task)}>編集</button>
-              <button type="button" onClick={()=>handleDelete(task.id)}>削除</button>
-            </>
-            )}
-            </li>
-        ))}
-      </ul>
-      <h2>{ validationError }</h2>
-      <form onSubmit={handleSubmit}>
-        <input value={titles} onChange={(e) => setTitles(e.target.value)} />
-        <textarea value={descriptions} onChange={(e) => setDescriptions(e.target.value)}></textarea>
-        <button >課題内容の追加</button>
-      </form>
+      {token ? (
+        <div>
+          <h1>タスク一覧</h1>
+          <ul>
+            {tasks.map((task) => (
+              <li key={task.id}>
+                <TaskItem
+                  task={task}
+                  onDelete={handleDelete}
+                  onStartEdit={handleStartEdit}
+                  onPut={handlePut}
+                  editingId={editingId}
+                />
+              </li>
+            ))}
+          </ul>
+          <h2>{validationError}</h2>
+          <form onSubmit={handleSubmit}>
+            <input value={titles} onChange={(e) => setTitles(e.target.value)} />
+            <textarea
+              value={descriptions}
+              onChange={(e) => setDescriptions(e.target.value)}
+            ></textarea>
+            <button>課題内容の追加</button>
+          </form>
+          <button onClick={handleLogout}>ログアウト</button>
+        </div>
+      ) : isRegistering ? (
+        <div>
+          <h2>{validationError}</h2>
+          <form onSubmit={handleRegister}>
+            <input value={name} onChange={(e) => setName(e.target.value)} />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+            />
+            <button>登録</button>
+          </form>
+          <button onClick={handleToggle}>ログインページに切り替え</button>
+        </div>
+      ) : (
+        <div>
+          <h2>{validationError}</h2>
+          <form onSubmit={handleLogin}>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button>ログイン</button>
+          </form>
+          <button onClick={handleToggle}>登録ページに切り替え</button>
+        </div>
+      )}
     </div>
-  ) : (
-    <div>
-      <h2>{validationError}</h2>
-      <form  onSubmit={handleLogin}>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button>ログインボタン</button>
-      </form>
-    </div>
-  )}
-  </div>
   );
 }

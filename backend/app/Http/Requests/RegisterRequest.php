@@ -21,7 +21,7 @@ class RegisterRequest extends FormRequest
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {   
+    {
         return[
             'name' => ['string', 'required',],
             'email' => ['required', 'email', 'unique:users'],
