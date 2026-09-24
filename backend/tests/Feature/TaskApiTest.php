@@ -5,7 +5,8 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Task;
-
+use Laravel\Sanctum\Sanctum;
+use App\Models\User;
 class TaskApiTest extends TestCase
 {
     /**
@@ -13,6 +14,14 @@ class TaskApiTest extends TestCase
      */
 
     use RefreshDatabase;
+
+    protected function setUp(): void{
+        parent::setUp();
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+    }
 
     public function test_example(): void
     {
