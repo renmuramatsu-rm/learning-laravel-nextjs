@@ -10,6 +10,17 @@ export type Task = {
   completed: boolean;
 };
 
+const baseFormClasses = "m-auto p-8 rounded-lg shadow-lg bg-gray-100";
+const baseAreaClasses = "mb-4";
+const baseInputClasses =
+  "border border-gray-300 rounded-md shadow-sm mt-1 w-full px-4 py-2 bg-white";
+const baseLabelClasses = "block text-sm font-medium text-gray-800";
+const baseButtonClasses =
+  "w-full bg-sky-500 text-white py-2 px-4 rounded-md shadow hover:bg-sky-600";
+const baseToggleClasses = "w-full text-sm mt-10 text-center mx-auto";
+const baseToggleButtonClasses =
+  "text-sky-600 underline px-2 hover:bg-sky-100";
+
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [titles, setTitles] = useState("");
@@ -260,32 +271,102 @@ export default function Home() {
         </div>
       ) : isRegistering ? (
         <div>
-          <form onSubmit={handleRegister}>
-            <input value={name} onChange={(e) => setName(e.target.value)} />
-            <input value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <input
-              value={passwordConfirmation}
-              onChange={(e) => setPasswordConfirmation(e.target.value)}
-            />
-            <button>登録</button>
+          {validationError && <p className="text-red-500">{validationError}</p>}
+          <form onSubmit={handleRegister} className={baseFormClasses}>
+            <div className={baseAreaClasses}>
+              <label className={baseLabelClasses}>
+                名前
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={baseInputClasses}
+                />
+              </label>
+            </div>
+            <div className={baseAreaClasses}>
+              <label className={baseLabelClasses}>
+                メールアドレス
+                <input
+                  value={email}
+                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={baseInputClasses}
+                />
+              </label>
+            </div>
+            <div className={baseAreaClasses}>
+              <label className={baseLabelClasses}>
+                パスワード
+                <input
+                  value={password}
+                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={baseInputClasses}
+                />
+              </label>
+            </div>
+            <div className={baseAreaClasses}>
+              <label className={baseLabelClasses}>
+                パスワード確認用
+                <input
+                  value={passwordConfirmation}
+                  type="password"
+                  onChange={(e) => setPasswordConfirmation(e.target.value)}
+                  className={baseInputClasses}
+                />
+              </label>
+            </div>
+            <button className={baseButtonClasses}>登録</button>
+            <p className={baseToggleClasses}>
+              アカウントをお持ちの方は
+              <button
+                type="button"
+                onClick={handleToggle}
+                className={baseToggleButtonClasses}
+              >
+                ログイン
+              </button>
+            </p>
           </form>
-          <button onClick={handleToggle}>ログインページに切り替え</button>
         </div>
       ) : (
         <div>
-          <form onSubmit={handleLogin}>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <button>ログイン</button>
+          {validationError && <p className="text-red-500">{validationError}</p>}
+          <form onSubmit={handleLogin} className={baseFormClasses}>
+            <div className={baseAreaClasses}>
+              <label className={baseLabelClasses}>
+                メールアドレス
+                <input
+                  value={email}
+                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={baseInputClasses}
+                />
+              </label>
+            </div>
+            <div className={baseAreaClasses}>
+              <label className={baseLabelClasses}>
+                パスワード
+                <input
+                  value={password}
+                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={baseInputClasses}
+                />
+              </label>
+            </div>
+            <button className={baseButtonClasses}>ログイン</button>
+            <p className={baseToggleClasses}>
+              アカウントをお持ちでない方は
+              <button
+                type="button"
+                onClick={handleToggle}
+                className={baseToggleButtonClasses}
+              >
+                登録
+              </button>
+            </p>
           </form>
-          <button onClick={handleToggle}>登録ページに切り替え</button>
         </div>
       )}
     </div>
