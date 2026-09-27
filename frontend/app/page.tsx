@@ -27,6 +27,14 @@ export default function Home() {
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     let success: boolean;
+    if (editingId !== null) {
+      const answer = window.confirm(
+        "編集中のタスク内容が削除されますがよろしいですか？",
+      );
+      if (!answer) {
+        return;
+      }
+    }
     fetch("http://172.23.85.221:8000/api/tasks", {
       method: "POST",
       headers: {
@@ -45,6 +53,7 @@ export default function Home() {
           setTitles("");
           setDescriptions("");
           setValidationError("");
+          handleCancel();
         } else {
           setValidationError(json.message);
         }
@@ -227,9 +236,7 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          {validationError && (
-            <p className="text-red-500">{validationError}</p>
-          )}
+          {validationError && <p className="text-red-500">{validationError}</p>}
           <form onSubmit={handleSubmit}>
             <div className="flex items-center justify-between m-4">
               <div className="flex flex-col gap-2">
