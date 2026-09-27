@@ -26,23 +26,25 @@ export default function TaskItem({
 
   return (
     <div
-      className={`rounded-2xl border p-4 flex justify-between items-center ${task.id === editingId ? "bg-blue-100" : "bg-white"}`}
+      className={`rounded-2xl border p-4 flex justify-between items-center ${task.id === editingId ? "bg-sky-100 dark:bg-sky-800" : "bg-white dark:bg-gray-700"}`}
     >
       {task.id === editingId ? (
         <>
           <div className="flex flex-col gap-2">
             {editValidationError && (
-              <p className="text-red-500">{editValidationError}</p>
+              <p className="text-red-500 dark:text-red-300">
+                {editValidationError}
+              </p>
             )}
             <input
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="font-bold border p-1"
+              className="font-bold border p-1 text-gray-800 dark:text-gray-300"
             />
             <textarea
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
-              className="text-sm text-gray-500 border h-20 w-80"
+              className="text-sm text-gray-500 border h-20 w-80 dark:text-gray-400"
             />
           </div>
           <div>
@@ -51,7 +53,7 @@ export default function TaskItem({
               onClick={() => {
                 onCancel();
               }}
-              className="border mx-3 px-1"
+              className="border mx-3 px-1 dark:text-gray-200"
             >
               キャンセル
             </button>
@@ -59,7 +61,7 @@ export default function TaskItem({
               onClick={() => {
                 onPut(task.id, editTitle, editDescription);
               }}
-              className="border mx-3 px-2"
+              className="border mx-3 px-2 dark:text-gray-200"
             >
               保存
             </button>
@@ -68,9 +70,11 @@ export default function TaskItem({
       ) : (
         <>
           <div className="flex flex-col gap-2">
-            <div className="font-bold">{task.title}</div>
+            <div className="font-bold dark:text-gray-200">{task.title}</div>
             {task.description && (
-              <div className="text-sm text-gray-500">{task.description}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">
+                {task.description}
+              </div>
             )}
           </div>
           <div>
@@ -81,7 +85,7 @@ export default function TaskItem({
                 setEditTitle(task.title);
                 setEditDescription(task.description ?? "");
               }}
-              className="border mx-3 px-2 hover:bg-sky-100"
+              className="border mx-3 px-2 hover:bg-sky-100 dark:text-gray-200 dark:hover:bg-sky-500"
             >
               編集
             </button>
@@ -90,7 +94,7 @@ export default function TaskItem({
               onClick={() => {
                 onDelete(task.id);
               }}
-              className="border mx-3 px-2 hover:bg-sky-100"
+              className="border mx-3 px-2 hover:bg-sky-100 dark:text-gray-200 dark:hover:bg-sky-500"
             >
               削除
             </button>
