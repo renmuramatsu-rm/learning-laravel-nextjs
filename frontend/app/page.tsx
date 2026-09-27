@@ -15,6 +15,7 @@ export default function Home() {
   const [titles, setTitles] = useState("");
   const [descriptions, setDescriptions] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [editValidationError, setEditValidationError] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,6 +65,8 @@ export default function Home() {
 
   const handleStartEdit = (id: number) => {
     setEditingId(id);
+    setValidationError("");
+    setEditValidationError("");
   };
 
   const handlePut = (id: number, title: string, description: string) => {
@@ -92,9 +95,9 @@ export default function Home() {
           );
 
           setEditingId(null);
-          setValidationError("");
+          setEditValidationError("");
         } else {
-          setValidationError(json.message);
+          setEditValidationError(json.message);
         }
       });
   };
@@ -213,13 +216,13 @@ export default function Home() {
                   onStartEdit={handleStartEdit}
                   onPut={handlePut}
                   editingId={editingId}
+                  editValidationError={editValidationError}
                 />
               </li>
             ))}
           </ul>
           {validationError && (
-            <h2 className="text-red-500">{validationError}
-            </h2>
+            <p className="text-red-500">{validationError}</p>
           )}
           <form onSubmit={handleSubmit}>
             <div className="flex items-center justify-between m-4">
@@ -244,7 +247,6 @@ export default function Home() {
         </div>
       ) : isRegistering ? (
         <div>
-          <h2 className="text-red-500">{validationError}</h2>
           <form onSubmit={handleRegister}>
             <input value={name} onChange={(e) => setName(e.target.value)} />
             <input value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -262,7 +264,6 @@ export default function Home() {
         </div>
       ) : (
         <div>
-          <h2 className="text-red-500">{validationError}</h2>
           <form onSubmit={handleLogin}>
             <input value={email} onChange={(e) => setEmail(e.target.value)} />
             <input

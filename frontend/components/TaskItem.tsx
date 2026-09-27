@@ -8,12 +8,14 @@ export default function TaskItem({
   onPut,
   onStartEdit,
   editingId,
+  editValidationError,
 }: {
   task: Task;
   onDelete: (id: number) => void;
   onStartEdit: (id: number) => void;
   onPut: (id: number, title: string, description: string) => void;
   editingId: number | null;
+  editValidationError: string;
 }) {
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(
@@ -27,6 +29,9 @@ export default function TaskItem({
       {task.id === editingId ? (
         <>
           <div className="flex flex-col gap-2">
+            {editValidationError && (
+              <p className="text-red-500">{editValidationError}</p>
+            )}
             <input
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
