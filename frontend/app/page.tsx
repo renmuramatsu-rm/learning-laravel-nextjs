@@ -10,16 +10,19 @@ export type Task = {
   completed: boolean;
 };
 
-const baseFormClasses = "m-auto p-8 rounded-lg shadow-lg bg-gray-100";
+const baseFormClasses =
+  "m-auto p-8 rounded-lg shadow-lg bg-gray-100 dark:bg-gray-700";
 const baseAreaClasses = "mb-4";
 const baseInputClasses =
-  "border border-gray-300 rounded-md shadow-sm mt-1 w-full px-4 py-2 bg-white";
-const baseLabelClasses = "block text-sm font-medium text-gray-800";
+  "border border-gray-300 rounded-md shadow-sm mt-1 w-full px-4 py-2 bg-white dark:bg-gray-600";
+const baseLabelClasses =
+  "block text-sm font-medium text-gray-800 dark:text-gray-200";
 const baseButtonClasses =
-  "w-full bg-sky-500 text-white py-2 px-4 rounded-md shadow hover:bg-sky-600";
-const baseToggleClasses = "w-full text-sm mt-10 text-center mx-auto";
+  "w-full bg-sky-500 text-white py-2 px-4 rounded-md shadow hover:bg-sky-600 dark:bg-sky-800 dark:hover:bg-sky-900 dark:text-gray-200";
+const baseToggleClasses =
+  "w-full text-sm mt-10 text-center mx-auto dark:text-gray-200";
 const baseToggleButtonClasses =
-  "text-sky-600 underline px-2 hover:bg-sky-100";
+  "text-sky-600 underline px-2 hover:bg-sky-100 dark:hover:bg-sky-700 dark:text-sky-400";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -232,7 +235,7 @@ export default function Home() {
       {token ? (
         <div>
           <h1 className="text-xl font-bold">タスク一覧</h1>
-          <ul className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-4 dark:text-gray-300">
             {tasks.map((task) => (
               <li key={task.id}>
                 <TaskItem
@@ -247,23 +250,27 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          {validationError && <p className="text-red-500">{validationError}</p>}
+          {validationError && (
+            <p className="text-red-500 dark:text-red-300">{validationError}</p>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="flex items-center justify-between m-4">
               <div className="flex flex-col gap-2">
                 <input
                   value={titles}
                   onChange={(e) => setTitles(e.target.value)}
-                  className="border px-2 font-bold p-1"
+                  className="border px-2 font-bold p-1 text-black dark:text-gray-300 dark:bg-gray-600"
                 />
                 <textarea
-                  className="border px-2 text-sm text-gray-500 h-20 w-80"
+                  className="border px-2 text-sm text-gray-500 h-20 w-80 dark:text-gray-300 dark:bg-gray-600"
                   value={descriptions}
                   onChange={(e) => setDescriptions(e.target.value)}
                 ></textarea>
               </div>
               <div>
-                <button className="border px-2">課題内容の追加</button>
+                <button className="border px-2 text-black dark:text-gray-300 dark:bg-gray-600">
+                  課題内容の追加
+                </button>
               </div>
             </div>
           </form>
@@ -271,7 +278,9 @@ export default function Home() {
         </div>
       ) : isRegistering ? (
         <div>
-          {validationError && <p className="text-red-500">{validationError}</p>}
+          {validationError && (
+            <p className="text-red-500 dark:text-red-300">{validationError}</p>
+          )}
           <form onSubmit={handleRegister} className={baseFormClasses}>
             <div className={baseAreaClasses}>
               <label className={baseLabelClasses}>
@@ -331,7 +340,9 @@ export default function Home() {
         </div>
       ) : (
         <div>
-          {validationError && <p className="text-red-500">{validationError}</p>}
+          {validationError && (
+                <p className="text-red-500 dark:text-red-300">{validationError}</p>
+          )}
           <form onSubmit={handleLogin} className={baseFormClasses}>
             <div className={baseAreaClasses}>
               <label className={baseLabelClasses}>
