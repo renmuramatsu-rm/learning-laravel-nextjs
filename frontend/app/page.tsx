@@ -200,11 +200,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <div className="max-w-xl mx-auto my-10 p-4">
       {token ? (
         <div>
-          <h1>タスク一覧</h1>
-          <ul>
+          <h1 className="text-xl font-bold">タスク一覧</h1>
+          <ul className="flex flex-col gap-4">
             {tasks.map((task) => (
               <li key={task.id}>
                 <TaskItem
@@ -217,20 +217,34 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <h2>{validationError}</h2>
+          {validationError && (
+            <h2 className="text-red-500">{validationError}
+            </h2>
+          )}
           <form onSubmit={handleSubmit}>
-            <input value={titles} onChange={(e) => setTitles(e.target.value)} />
-            <textarea
-              value={descriptions}
-              onChange={(e) => setDescriptions(e.target.value)}
-            ></textarea>
-            <button>課題内容の追加</button>
+            <div className="flex items-center justify-between m-4">
+              <div className="flex flex-col gap-2">
+                <input
+                  value={titles}
+                  onChange={(e) => setTitles(e.target.value)}
+                  className="border px-2 font-bold p-1"
+                />
+                <textarea
+                  className="border px-2 text-sm text-gray-500 h-20 w-80"
+                  value={descriptions}
+                  onChange={(e) => setDescriptions(e.target.value)}
+                ></textarea>
+              </div>
+              <div>
+                <button className="border px-2">課題内容の追加</button>
+              </div>
+            </div>
           </form>
           <button onClick={handleLogout}>ログアウト</button>
         </div>
       ) : isRegistering ? (
         <div>
-          <h2>{validationError}</h2>
+          <h2 className="text-red-500">{validationError}</h2>
           <form onSubmit={handleRegister}>
             <input value={name} onChange={(e) => setName(e.target.value)} />
             <input value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -248,7 +262,7 @@ export default function Home() {
         </div>
       ) : (
         <div>
-          <h2>{validationError}</h2>
+          <h2 className="text-red-500">{validationError}</h2>
           <form onSubmit={handleLogin}>
             <input value={email} onChange={(e) => setEmail(e.target.value)} />
             <input

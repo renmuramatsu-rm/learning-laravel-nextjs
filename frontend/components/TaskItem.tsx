@@ -21,38 +21,64 @@ export default function TaskItem({
   );
 
   return (
-    <div>
+    <div
+      className={`rounded-2xl border p-4 flex justify-between items-center ${task.id === editingId ? "bg-blue-100" : "bg-white"}`}
+    >
       {task.id === editingId ? (
         <>
-          <input
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-          />
-          <input
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-          />
-          <button onClick={() => onPut(task.id, editTitle, editDescription)}>
-            保存
-          </button>
+          <div className="flex flex-col gap-2">
+            <input
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              className="font-bold border p-1"
+            />
+            <textarea
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              className="text-sm text-gray-500 border h-20 w-80"
+            />
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                onPut(task.id, editTitle, editDescription);
+              }}
+              className="border mx-3 px-2"
+            >
+              保存
+            </button>
+          </div>
         </>
       ) : (
         <>
-          {task.title}
-          {task.description}
-          <button
-            type="button"
-            onClick={() => {
-              onStartEdit(task.id);
-              setEditTitle(task.title);
-              setEditDescription(task.description ?? "");
-            }}
-          >
-            編集
-          </button>
-          <button type="button" onClick={() => onDelete(task.id)}>
-            削除
-          </button>
+          <div className="flex flex-col gap-2">
+            <div className="font-bold">{task.title}</div>
+            {task.description && (
+              <div className="text-sm text-gray-500">{task.description}</div>
+            )}
+          </div>
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                onStartEdit(task.id);
+                setEditTitle(task.title);
+                setEditDescription(task.description ?? "");
+              }}
+              className="border mx-3 px-2 hover:bg-sky-100"
+            >
+              編集
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onDelete(task.id);
+              }}
+              className="border mx-3 px-2 hover:bg-sky-100"
+            >
+              削除
+            </button>
+          </div>
         </>
       )}
     </div>
