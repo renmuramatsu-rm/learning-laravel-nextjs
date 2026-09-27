@@ -102,6 +102,11 @@ export default function Home() {
       });
   };
 
+  const handleCancel = (): void => {
+    setEditingId(null);
+    setEditValidationError("");
+  };
+
   const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     let success: boolean;
@@ -217,6 +222,7 @@ export default function Home() {
                   onPut={handlePut}
                   editingId={editingId}
                   editValidationError={editValidationError}
+                  onCancel={handleCancel}
                 />
               </li>
             ))}
