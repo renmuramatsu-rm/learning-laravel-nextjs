@@ -9,6 +9,7 @@ export default function TaskItem({
   onStartEdit,
   editingId,
   editValidationError,
+  onCancel,
 }: {
   task: Task;
   onDelete: (id: number) => void;
@@ -16,6 +17,7 @@ export default function TaskItem({
   onPut: (id: number, title: string, description: string) => void;
   editingId: number | null;
   editValidationError: string;
+  onCancel: () => void;
 }) {
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(
@@ -44,6 +46,15 @@ export default function TaskItem({
             />
           </div>
           <div>
+            <button
+              type="button"
+              onClick={() => {
+                onCancel();
+              }}
+              className="border mx-3 px-1"
+            >
+              キャンセル
+            </button>
             <button
               onClick={() => {
                 onPut(task.id, editTitle, editDescription);
