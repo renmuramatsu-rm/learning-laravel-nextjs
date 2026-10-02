@@ -49,7 +49,7 @@ export default function Home() {
         return;
       }
     }
-    fetch("http://172.23.85.221:8000/api/tasks", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -75,7 +75,7 @@ export default function Home() {
   };
 
   const handleDelete = (id: number) => {
-    fetch(`http://172.23.85.221:8000/api/tasks/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     }).then((res) => {
@@ -94,7 +94,7 @@ export default function Home() {
 
   const handlePut = (id: number, title: string, description: string) => {
     let success: boolean;
-    fetch(`http://172.23.85.221:8000/api/tasks/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export default function Home() {
   const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     let success: boolean;
-    fetch(`http://172.23.85.221:8000/api/login`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, password: password }),
@@ -158,7 +158,7 @@ export default function Home() {
   const handleRegister = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     let success: boolean;
-    fetch(`http://172.23.85.221:8000/api/register`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -193,7 +193,7 @@ export default function Home() {
 
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    fetch(`http://172.23.85.221:8000/api/logout`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -210,7 +210,7 @@ export default function Home() {
   useEffect(() => {
     if (!token) return;
     let success: boolean;
-    fetch("http://172.23.85.221:8000/api/tasks", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
