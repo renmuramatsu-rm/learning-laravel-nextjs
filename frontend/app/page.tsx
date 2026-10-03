@@ -226,9 +226,14 @@ export default function Home() {
       });
   }, [token]);
 
+  /* eslint-disable react-hooks/set-state-in-effect
+　--  リロード時にログイン認証を維持するための記載
+  --  useStateの初期化関数を使用すると、サーバーにはlocalStorageがないため、サーバーとブラウザで画面が変わりハイドレーションエラーとなる
+  -- ２回レンダリングのためブラウザで無駄なレンダリングが一回増えるが、小規模開発のため今回は無視する*/
   useEffect(() => {
     setToken(localStorage.getItem("token") || "");
   }, []);
+  /* eslint-enable */
 
   return (
     <div className="max-w-xl mx-auto my-10 p-4">
@@ -341,7 +346,7 @@ export default function Home() {
       ) : (
         <div>
           {validationError && (
-                <p className="text-red-500 dark:text-red-300">{validationError}</p>
+            <p className="text-red-500 dark:text-red-300">{validationError}</p>
           )}
           <form onSubmit={handleLogin} className={baseFormClasses}>
             <div className={baseAreaClasses}>
