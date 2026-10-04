@@ -38,52 +38,55 @@ export default function Home() {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let success: boolean;
-    if (editingId !== null) {
-      const answer = window.confirm(
-        "編集中のタスク内容が削除されますがよろしいですか？",
-      );
-      if (!answer) {
-        return;
-      }
-    }
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ title: titles, description: descriptions }),
-    })
-      .then((res) => {
-        success = res.ok;
-        return res.json();
-      })
-      .then((json) => {
-        if (success) {
-          setTasks([...tasks, json.data]);
-          setTitles("");
-          setDescriptions("");
-          setValidationError("");
-          handleCancel();
-        } else {
-          setValidationError(json.message);
+    try {
+      if (editingId !== null) {
+        const answer = window.confirm(
+          "編集中のタスク内容が削除されますがよろしいですか？",
+        );
+        if (!answer) {
+          return;
         }
+      }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: titles, description: descriptions }),
       });
+      const json = await res.json();
+      if (res.ok) {
+        setTasks([...tasks, json.data]);
+        setTitles("");
+        setDescriptions("");
+        setValidationError("");
+        handleCancel();
+      } else {
+        setValidationError(json.message);
+      }
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => {
-      const success = res.ok;
-      if (success) {
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (res.ok) {
         setTasks(tasks.filter((task) => task.id !== id));
       }
-    });
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
   };
 
   const handleStartEdit = (id: number) => {
@@ -92,37 +95,37 @@ export default function Home() {
     setEditValidationError("");
   };
 
-  const handlePut = (id: number, title: string, description: string) => {
-    let success: boolean;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        title,
-        description,
-      }),
-    })
-      .then((res) => {
-        success = res.ok;
-        return res.json();
-      })
-      .then((json) => {
-        if (success) {
-          setTasks(
-            tasks.map((task) =>
-              task.id === id ? { ...task, title, description } : task,
-            ),
-          );
-
-          setEditingId(null);
-          setEditValidationError("");
-        } else {
-          setEditValidationError(json.message);
-        }
-      });
+  const handlePut = async (id: number, title: string, description: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title,
+            description,
+          }),
+        },
+      );
+      const json = await res.json();
+      if (res.ok) {
+        setTasks(
+          tasks.map((task) =>
+            task.id === id ? { ...task, title, description } : task,
+          ),
+        );
+        setEditingId(null);
+        setEditValidationError("");
+      } else {
+        setEditValidationError(json.message);
+      }
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
   };
 
   const handleCancel = (): void => {
@@ -130,100 +133,105 @@ export default function Home() {
     setEditValidationError("");
   };
 
-  const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let success: boolean;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password: password }),
-    })
-      .then((res) => {
-        success = res.ok;
-        return res.json();
-      })
-      .then((json) => {
-        if (success) {
-          setEmail("");
-          setPassword("");
-          setToken(json.token);
-          localStorage.setItem("token", json.token);
-          setValidationError("");
-        } else {
-          setValidationError(json.message);
-        }
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password }),
       });
+      const json = await res.json();
+      if (res.ok) {
+        setEmail("");
+        setPassword("");
+        setToken(json.token);
+        localStorage.setItem("token", json.token);
+        setValidationError("");
+      } else {
+        setValidationError(json.message);
+      }
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
   };
 
-  const handleRegister = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let success: boolean;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-        password_confirmation: passwordConfirmation,
-      }),
-    })
-      .then((res) => {
-        success = res.ok;
-        return res.json();
-      })
-      .then((json) => {
-        if (success) {
-          setName("");
-          setEmail("");
-          setPassword("");
-          setPasswordConfirmation("");
-          setToken(json.token);
-          localStorage.setItem("token", json.token);
-          setValidationError("");
-        } else {
-          setValidationError(json.message);
-        }
-      });
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password,
+            password_confirmation: passwordConfirmation,
+          }),
+        },
+      );
+      const json = await res.json();
+      if (res.ok) {
+        setName("");
+        setEmail("");
+        setPassword("");
+        setPasswordConfirmation("");
+        setToken(json.token);
+        localStorage.setItem("token", json.token);
+        setValidationError("");
+      } else {
+        setValidationError(json.message);
+      }
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
   };
 
   const handleToggle = () => {
     setIsRegistering(!isRegistering);
   };
 
-  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => {
-      const success = res.ok;
-      if (success) {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
         setToken("");
         localStorage.removeItem("token");
       }
-    });
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
   };
 
   useEffect(() => {
     if (!token) return;
-    let success: boolean;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        success = res.ok;
-        return res.json();
-      })
-      .then((json) => {
-        if (success) {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        const json = await res.json();
+        if (res.ok) {
           setTasks(json.data);
         } else {
           setTasks([]);
         }
-      });
+      } catch (error) {
+        console.error("エラーが発生しました:", error);
+      }
+    };
+    fetchData();
   }, [token]);
 
   /* eslint-disable react-hooks/set-state-in-effect
