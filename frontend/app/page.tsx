@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import TaskItem from "../components/TaskItem";
+import fetchApi from "@/lib/fetchApi";
 
 export type Task = {
   id: number;
@@ -49,16 +50,11 @@ export default function Home() {
           return;
         }
       }
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: titles, description: descriptions }),
+      const { ok, json } = await fetchApi("/api/tasks", "POST", {
+        title: titles,
+        description: descriptions,
       });
-      const json = await res.json();
-      if (res.ok) {
+      if (ok) {
         setTasks([...tasks, json.data]);
         setTitles("");
         setDescriptions("");
@@ -74,14 +70,8 @@ export default function Home() {
 
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      if (res.ok) {
+      const { ok } = await fetchApi(`/api/tasks/${id}`, "DELETE");
+      if (ok) {
         setTasks(tasks.filter((task) => task.id !== id));
       }
     } catch (error) {
@@ -97,22 +87,11 @@ export default function Home() {
 
   const handlePut = async (id: number, title: string, description: string) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            title,
-            description,
-          }),
-        },
-      );
-      const json = await res.json();
-      if (res.ok) {
+      const { ok, json } = await fetchApi(`/api/tasks/${id}`, "PUT", {
+        title,
+        description,
+      });
+      if (ok) {
         setTasks(
           tasks.map((task) =>
             task.id === id ? { ...task, title, description } : task,
@@ -136,13 +115,12 @@ export default function Home() {
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: password }),
+      const { ok, json } = await fetchApi("/api/login", "POST", {
+        email: email,
+        password: password,
       });
-      const json = await res.json();
-      if (res.ok) {
+
+      if (ok) {
         setEmail("");
         setPassword("");
         setToken(json.token);
@@ -159,21 +137,13 @@ export default function Home() {
   const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password,
-            password_confirmation: passwordConfirmation,
-          }),
-        },
-      );
-      const json = await res.json();
-      if (res.ok) {
+      const { ok, json } = await fetchApi("/api/register", "POST", {
+        name: name,
+        email: email,
+        password: password,
+        password_confirmation: passwordConfirmation,
+      });
+      if (ok) {
         setName("");
         setEmail("");
         setPassword("");
@@ -196,13 +166,8 @@ export default function Home() {
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.ok) {
+      const { ok } = await fetchApi("/api/logout", "POST");
+      if (ok) {
         setToken("");
         localStorage.removeItem("token");
       }
@@ -215,14 +180,8 @@ export default function Home() {
     if (!token) return;
     const fetchData = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        const json = await res.json();
-        if (res.ok) {
+        const { ok, json } = await fetchApi("/api/tasks", "GET");
+        if (ok) {
           setTasks(json.data);
         } else {
           setTasks([]);
