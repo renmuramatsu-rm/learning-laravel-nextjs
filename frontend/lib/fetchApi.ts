@@ -6,8 +6,15 @@ export default async function fetchApi(
   const token = localStorage.getItem("token") || "";
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
     headers: token
-      ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-      : { "Content-Type": "application/json" },
+      ? {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      : {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
     method: method,
     body: body ? JSON.stringify(body) : undefined,
   });
