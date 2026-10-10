@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Task } from "../app/page";
+import { Task } from "@/lib/type";
 
 export default function TaskItem({
   task,
