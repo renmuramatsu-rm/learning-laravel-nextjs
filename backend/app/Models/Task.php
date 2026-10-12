@@ -15,7 +15,12 @@ class Task extends Model
         'completed',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected $casts = [
-        'completed' => 'boolean'
+        'completed' => 'boolean',
     ];
 }

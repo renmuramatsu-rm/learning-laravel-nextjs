@@ -2,22 +2,25 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\Task;
-use Laravel\Sanctum\Sanctum;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
+
 class TaskApiTest extends TestCase
 {
     /**
      * A basic feature test example.
      */
-
     use RefreshDatabase;
 
-    protected function setUp(): void{
+    protected User $user;
+
+    protected function setUp(): void
+    {
         parent::setUp();
-        Sanctum::actingAs(
+        $this->user = Sanctum::actingAs(
             User::factory()->create(),
             ['*']
         );
@@ -26,14 +29,12 @@ class TaskApiTest extends TestCase
     public function test_example(): void
     {
         $response = $this->get('/');
-
         $response->assertStatus(200);
     }
 
     public function test_it_lists_tasks(): void
     {
-        Task::factory()->count(3)->create();
-
+        Task::factory()->count(3)->create(['user_id' => $this->user->id]);
         $this->getJson('/api/tasks')->assertOk()->assertJsonCount(3, 'data');
     }
 
@@ -47,32 +48,43 @@ class TaskApiTest extends TestCase
         $this->assertDatabaseHas('tasks', ['title' => 'Test Task', 'description' => 'Test Description', 'completed' => false]);
     }
 
-    public function test_it_requires_a_title_to_create_a_task():void{
+    public function test_it_requires_a_title_to_create_a_task(): void
+    {
         $this->postJson('/api/tasks', [])->assertUnprocessable()->assertJsonValidationErrors('title');
     }
 
-    public function test_it_shows_a_task(): void{
-        $task = Task::factory()->create();
-
+    public function test_it_shows_a_task(): void
+    {
+        $task = Task::factory()->create(['user_id' => $this->user->id]);
         $this->getJson("/api/tasks/{$task->id}")->assertOk()->assertJsonPath('data.id', $task->id);
     }
 
     public function test_it_updates_a_task(): void
     {
-        $task = Task::factory()->create(['completed' => false]);
+        $task = Task::factory()->create(['user_id' => $this->user->id, 'completed' => false]);
 
         $this->putJson("/api/tasks/{$task->id}", [
-            'completed'=>true
-        ])->assertJsonPath('data.id',$task->id)->assertJsonPath('data.completed', true)->assertOK();
+            'completed' => true,
+        ])->assertJsonPath('data.id', $task->id)->assertJsonPath('data.completed', true)->assertOK();
 
-        $this->assertDatabaseHas('tasks', ['id' => $task->id, 'completed'=>true]);
+        $this->assertDatabaseHas('tasks', ['id' => $task->id, 'completed' => true]);
     }
 
     public function test_it_deletes_a_task(): void
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => $this->user->id]);
 
         $this->deleteJson("/api/tasks/{$task->id}")->assertNoContent();
-        $this->assertDatabaseMissing('tasks', ['id'=>$task->id]);
+        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
+    }
+
+    public function test_it_forbids_updating_another_users_task(): void
+    {
+        $task = Task::factory()->create(['completed' => false]);
+        $this->putJson("/api/tasks/{$task->id}", [
+            'completed' => true,
+        ])->assertForbidden();
+        $this->assertDatabaseHas('tasks', ['id' => $task->id, 'completed' => false]);
+
     }
 }

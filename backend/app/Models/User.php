@@ -16,7 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -24,6 +24,10 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -37,5 +41,4 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
 }
